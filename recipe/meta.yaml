@@ -1,19 +1,19 @@
 {% set name = "azure-mgmt-eventgrid" %}
-{% set version = "10.2.0b2" %}
+{% set version = "10.4.0" %}
 
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.zip
-  sha256: 41c1d8d700b043254e11d522d3aff011ae1da891f909c777de02754a3bb4a990
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name.replace("-", "_") }}-{{ version }}.tar.gz
+  sha256: 303e5e27cf4bb5ec833ba4e5a9ef70b5bc410e190412ec47cde59d82e413fb7e
 
 build:
   number: 1
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  skip: true  # [py<36]
+  skip: true  # [py<39]
 
 requirements:
   host:
@@ -23,14 +23,16 @@ requirements:
     - pip
   run:
     - python
-    - msrest >=0.6.21
     - azure-common >=1.1,<2
-    - azure-mgmt-core>=1.3.0,<2.0.0
-    # _event_grid_management_client_enums.py - line 10
-    # from six import with_metaclass
-    - six
+    - azure-mgmt-core >=1.3.0,<2.0.0
+    - isodate >=0.6.1
+    - typing_extensions >=4.6.0
 
+# Azure sdk test tools are not supported by pypi and Anaconda.
+# Only pip check is performed.
 test:
+  source_files:
+    - tests
   imports:
     - azure.mgmt.eventgrid
     - azure.mgmt.eventgrid.aio
